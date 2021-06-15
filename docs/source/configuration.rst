@@ -37,6 +37,15 @@ Is useful when you want to pass back and forth arrays previously converted by CA
 Do **not** copy C-contiguous arrays, default behaviour is to copy C-contiguous arrays to Fortran order as this is what Armadillo is optimised for.
 Note that on the conversion back, it is assumed that the memory of the Armadillo object has Fortran order layout.
 
+C-order mode
+************
+
+.. note:: Armadillo is optimised for F-order/column contiguous memory, turning on this model will slow down Armadillo.
+
+If you wish to enforce C-order aka row-contiguous rather than F-order you can change the definition of well-behaved.
+Rather than enforcing F-order this mode enforces C-order and notably it ensures that the returned arrays are C-order.
+There is no equivalent of ``ENABLE_CARMA_DONT_REQUIRE_F_CONTIGUOUS`` for this mode.
+
 Stealing
 --------
 
@@ -82,7 +91,7 @@ This option sets ARMA_NO_DEBUG as part of the release flags.
 Developer settings
 ------------------
 
-Two settings exists to faciliate development of CARMA:
+Two settings exists to facilitate development of CARMA:
 
 .. code-block:: bash
 
@@ -99,5 +108,4 @@ This enables:
 
     -DCARMA_DEV_DEBUG_MODE=ON
 
-Turns on :bash:`CARMA_DEV_MODE` and
-:bash:`ENABLE_CARMA_EXTRA_DEBUG`.
+Turns on :bash:`CARMA_DEV_MODE` and :bash:`ENABLE_CARMA_EXTRA_DEBUG`.

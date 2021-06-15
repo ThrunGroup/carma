@@ -69,7 +69,7 @@ If you don't the memory will be aliased by the two Numpy arrays and bad things w
 A second consideration is memory layout. Armadillo is optimised for column-major (Fortran order) memory whereas Numpy defaults to row-major (C order).
 The default behaviour is to automatically convert, read copy, C-order arrays to F-order arrays upon conversion to Armadillo. Users should note that the library will not convert back to C-order when returning.
 
-For details see the documentation section [Memory Management](https://carma.readthedocs.io/en/latest/memory_management.html).
+Compile time options exist to disable this behaviour or switch to C-order, for details see the documentation section [Memory Management](https://carma.readthedocs.io/en/latest/memory_management.html).
 
 ### Example
 
