@@ -16,8 +16,8 @@ py::tuple ols(arma::colvec& y, arma::mat& X) {
     arma::colvec std_errs = arma::sqrt(sig2 * arma::diagvec( arma::inv(arma::trans(X)*X)) );
 
     return py::make_tuple(
-        carma::col_to_arr(coeffs),
-        carma::col_to_arr(std_errs)
+        carma::to_numpy(coeffs),
+        carma::to_numpy(std_errs)
     );
 }
 

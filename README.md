@@ -102,8 +102,8 @@ py::tuple ols(arma::mat& X, arma::colvec& y) {
     // We take ownership of the memory from the armadillo objects and
     // return to python as a tuple containing two Numpy arrays.
     return py::make_tuple(
-        carma::col_to_arr(coeffs),
-        carma::col_to_arr(std_errs)
+        carma::to_numpy(coeffs),
+        carma::to_numpy(std_errs)
     );
 }
 
