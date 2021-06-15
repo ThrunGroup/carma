@@ -51,12 +51,21 @@ inline py::array_t<T> construct_array(arma::Row<T>* data) {
 
     py::capsule base = create_capsule<arma::Row<T>>(data);
 
+#ifdef CARMA_C_CONTIGUOUS_MODE
+    return py::array_t<T>(
+        {static_cast<ssize_t>(1), ncols},  // shape
+        {ncols * tsize, tsize},            // C-style contiguous strides
+        data->memptr(),                    // the data pointer
+        base                               // numpy array references this parent
+    );
+#else
     return py::array_t<T>(
         {static_cast<ssize_t>(1), ncols},  // shape
         {tsize, tsize},                    // F-style contiguous strides
         data->memptr(),                    // the data pointer
         base                               // numpy array references this parent
     );
+#endif
 } /* construct_array */
 
 template <typename T>
@@ -66,12 +75,21 @@ inline py::array_t<T> construct_array(arma::Col<T>* data) {
 
     py::capsule base = create_capsule<arma::Col<T>>(data);
 
+#ifdef CARMA_C_CONTIGUOUS_MODE
+    return py::array_t<T>(
+        {nrows, static_cast<ssize_t>(1)},  // shape
+        {tsize, tsize},                    // C-style contiguous strides
+        data->memptr(),                    // the data pointer
+        base                               // numpy array references this parent
+    );
+#else
     return py::array_t<T>(
         {nrows, static_cast<ssize_t>(1)},  // shape
         {tsize, nrows * tsize},            // F-style contiguous strides
         data->memptr(),                    // the data pointer
         base                               // numpy array references this parent
     );
+#endif
 } /* construct_array */
 
 template <typename T>
@@ -82,12 +100,21 @@ inline py::array_t<T> construct_array(arma::Mat<T>* data) {
 
     py::capsule base = create_capsule<arma::Mat<T>>(data);
 
+#ifdef CARMA_C_CONTIGUOUS_MODE
+    return py::array_t<T>(
+        {nrows, ncols},          // shape
+        {ncols * tsize, tsize},  // C-style contiguous strides
+        data->memptr(),          // the data pointer
+        base                     // numpy array references this parent
+    );
+#else
     return py::array_t<T>(
         {nrows, ncols},          // shape
         {tsize, nrows * tsize},  // F-style contiguous strides
         data->memptr(),          // the data pointer
         base                     // numpy array references this parent
     );
+#endif
 } /* construct_array */
 
 template <typename T>
@@ -97,6 +124,18 @@ inline py::array_t<T> construct_array(arma::Cube<T>* data) {
     ssize_t ncols = static_cast<ssize_t>(data->n_cols);
     ssize_t nslices = static_cast<ssize_t>(data->n_slices);
 
+#ifdef CARMA_C_CONTIGUOUS_MODE
+    return py::array_t<T>(
+        // shape
+        {nrows, ncols, nslices},
+        // C-style contiguous strides
+        {ncols * nslices * tsize, nslices * tsize, tsize},
+        // the data pointer
+        data->memptr(),
+        // numpy array references this parent
+        create_capsule<arma::Cube<T>>(data)
+    );
+#else
     return py::array_t<T>(
         // shape
         {nrows, ncols, nslices},
@@ -107,6 +146,7 @@ inline py::array_t<T> construct_array(arma::Cube<T>* data) {
         // numpy array references this parent
         create_capsule<arma::Cube<T>>(data)
     );
+#endif
 } /* construct_array */
 
 }  // namespace details

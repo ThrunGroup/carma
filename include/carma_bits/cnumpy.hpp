@@ -29,94 +29,168 @@
 #include <algorithm>
 #include <utility>
 
-
 namespace py = pybind11;
 
 extern "C" {
-/* well behaved is defined as:
- *   - aligned
- *   - writeable
- *   - Fortran contiguous (column major)
- *   - owndata (optional, on by default)
- * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
- */
-static inline bool well_behaved(PyObject* src) {
-    PyArrayObject* arr = reinterpret_cast<PyArrayObject*>(src);
-#if defined CARMA_DONT_REQUIRE_OWNDATA && defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
-    return PyArray_CHKFLAGS(
-        arr, NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE
-    );
-#elif defined CARMA_DONT_REQUIRE_OWNDATA
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS
-    );
-#elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_OWNDATA
-    );
+#if defined CARMA_C_CONTIGUOUS_MODE
+    /* well behaved is defined as:
+     *   - aligned
+     *   - writeable
+     *   - C contiguous (row major)
+     *   - owndata (optional, on by default)
+     * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
+     */
+    static inline bool well_behaved(PyObject* src) {
+        PyArrayObject* arr = reinterpret_cast<PyArrayObject*>(src);
+    #if defined CARMA_DONT_REQUIRE_OWNDATA
+        return PyArray_CHKFLAGS(
+            arr, NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS
+        );
+    #else
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
+        );
+    #endif
+    }
 #else
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
-    );
+    /* well behaved is defined as:
+     *   - aligned
+     *   - writeable
+     *   - Fortran contiguous aka column major (optional, on by default)
+     *   - owndata (optional, on by default)
+     * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
+     */
+    static inline bool well_behaved(PyObject* src) {
+        PyArrayObject* arr = reinterpret_cast<PyArrayObject*>(src);
+    #if defined CARMA_DONT_REQUIRE_OWNDATA && defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
+        return PyArray_CHKFLAGS(
+            arr, NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE
+        );
+    #elif defined CARMA_DONT_REQUIRE_OWNDATA
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS
+        );
+    #elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_OWNDATA
+        );
+    #else
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
+        );
+    #endif
+    }
 #endif
-}
 
-static inline bool well_behaved_view(PyObject* src) {
-    PyArrayObject* arr = reinterpret_cast<PyArrayObject*>(src);
-#if defined CARMA_DONT_REQUIRE_OWNDATA && defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
-    return PyArray_CHKFLAGS(
-        arr, NPY_ARRAY_ALIGNED
-    );
-#elif defined CARMA_DONT_REQUIRE_OWNDATA
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED | NPY_ARRAY_F_CONTIGUOUS
-    );
-#elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED|  NPY_ARRAY_OWNDATA
-    );
+#if defined CARMA_C_CONTIGUOUS_MODE
+    /* well behaved is defined as:
+     *   - aligned
+     *   - C contiguous (row major)
+     *   - owndata (optional, on by default)
+     * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
+     */
+    static inline bool well_behaved_view(PyObject* src) {
+        PyArrayObject* arr = reinterpret_cast<PyArrayObject*>(src);
+    #if defined CARMA_DONT_REQUIRE_OWNDATA
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_C_CONTIGUOUS
+        );
+    #else
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED|  NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
+        );
+    #endif
+    }
 #else
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED|  NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
-    );
+    /* well behaved is defined as:
+     *   - aligned
+     *   - Fortran contiguous aka column major (optional, on by default)
+     *   - owndata (optional, on by default)
+     * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
+     */
+    static inline bool well_behaved_view(PyObject* src) {
+        PyArrayObject* arr = reinterpret_cast<PyArrayObject*>(src);
+    #if defined CARMA_DONT_REQUIRE_OWNDATA && defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
+        return PyArray_CHKFLAGS(
+            arr, NPY_ARRAY_ALIGNED
+        );
+    #elif defined CARMA_DONT_REQUIRE_OWNDATA
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_F_CONTIGUOUS
+        );
+    #elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED|  NPY_ARRAY_OWNDATA
+        );
+    #else
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED|  NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
+        );
+    #endif
+    }
 #endif
-}
 
-/* well behaved is defined as:
- *   - aligned
- *   - writeable
- *   - Fortran contiguous (column major)
- *   - owndata (optional, on by default)
- * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
- */
-static inline bool well_behaved_arr(PyArrayObject* arr) {
-#if defined CARMA_DONT_REQUIRE_OWNDATA && defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
-    return PyArray_CHKFLAGS(
-        arr, NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE
-    );
-#elif defined CARMA_DONT_REQUIRE_OWNDATA
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS
-    );
-#elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_OWNDATA
-    );
+#if defined CARMA_C_CONTIGUOUS_MODE
+    /* well behaved is defined as:
+     *   - aligned
+     *   - writeable
+     *   - C contiguous (row major)
+     *   - owndata (optional, on by default)
+     * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
+     */
+    static inline bool well_behaved_arr(PyArrayObject* arr) {
+    #if defined CARMA_DONT_REQUIRE_OWNDATA
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS
+        );
+    #else
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
+        );
+    #endif
+    }
 #else
-    return PyArray_CHKFLAGS(
-        arr,
-        NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
-    );
+    /* well behaved is defined as:
+     *   - aligned
+     *   - writeable
+     *   - Fortran contiguous aka column major (optional, on by default)
+     *   - owndata (optional, on by default)
+     * The last check can be disabled by setting `-DCARMA_DONT_REQUIRE_OWNDATA`
+     */
+    static inline bool well_behaved_arr(PyArrayObject* arr) {
+    #if defined CARMA_DONT_REQUIRE_OWNDATA && defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
+        return PyArray_CHKFLAGS(
+            arr, NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE
+        );
+    #elif defined CARMA_DONT_REQUIRE_OWNDATA
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS
+        );
+    #elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_OWNDATA
+        );
+    #else
+        return PyArray_CHKFLAGS(
+            arr,
+            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
+        );
+    #endif
+    }
 #endif
-}
 }  // extern "C"
 
 namespace carma {
@@ -222,7 +296,11 @@ inline static T* steal_copy_array(PyObject* obj) {
         dims,
         NULL,
         data,
+#ifdef CARMA_C_CONTIGUOUS_MODE
+        NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#else
         NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#endif
         NULL
     ));
 
@@ -269,7 +347,11 @@ inline static T* swap_copy_array(PyObject* obj) {
         dims,
         NULL,
         arma::memory::acquire<T>(api.PyArray_Size_(obj)),
+#ifdef CARMA_C_CONTIGUOUS_MODE
+        NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#else
         NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#endif
         NULL
     ));
 
@@ -284,8 +366,13 @@ inline static T* swap_copy_array(PyObject* obj) {
     if (PyArray_CHKFLAGS(src, NPY_ARRAY_OWNDATA)) {
         PyArray_ENABLEFLAGS(tmp, NPY_ARRAY_OWNDATA);
     }
+#ifdef CARMA_C_CONTIGUOUS_MODE
+    PyArray_ENABLEFLAGS(src, NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_BEHAVED | NPY_ARRAY_OWNDATA);
+    PyArray_CLEARFLAGS(src, NPY_ARRAY_F_CONTIGUOUS);
+#else
     PyArray_ENABLEFLAGS(src, NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_BEHAVED | NPY_ARRAY_OWNDATA);
     PyArray_CLEARFLAGS(src, NPY_ARRAY_C_CONTIGUOUS);
+#endif
 
     Py_DECREF(tmp);
     return reinterpret_cast<T*>(PyArray_DATA(src));

@@ -33,6 +33,11 @@ OPTION(ENABLE_CARMA_HARD_STEAL "Enable CARMA_HARD_STEAL" OFF)
 # is to copy when OWNDATA is False
 OPTION(ENABLE_CARMA_DONT_REQUIRE_OWNDATA "Enable CARMA_DONT_REQUIRE_OWNDATA" OFF)
 
+# -- CARMA_C_CONTIGUOUS_MODE --
+# The default behaviour is to convert to Fortran order as this is what Armadillo is optimised for.
+# This mode flips the behaviour where C-order (row-major) is enforced, NOTE the returned arrays are also C-order in contrast to CARMA_DONT_REQUIRE_OWNDATA
+OPTION(ENABLE_CARMA_C_CONTIGUOUS_MODE "Enable ENABLE_CARMA_C_CONTIGUOUS_MODE" OFF)
+
 # -- REQUIRE_F_CONTIGUOUS --
 # Do NOT copy C-contiguous arrays, default behaviour is to copy C-contiguous arrays to Fortran order as this is what Armadillo is optimised for.
 # Note that on the conversion back it is assumed that the memory of a Armadillo object has Fortran order layout.
