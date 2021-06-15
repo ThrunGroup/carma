@@ -1,10 +1,10 @@
-/*  carma/debug.h: Debug printers
- *  Copyright (c) 2020 Ralph Urlus <rurlus.dev@gmail.com>
+/*  carma_bits/debug.hpp: Debug printers
+ *  Copyright (c) 2021 Ralph Urlus <rurlus.dev@gmail.com>
  *  All rights reserved. Use of this source code is governed by a
  *  Apache-2.0 license that can be found in the LICENSE file. */
 /* External headers */
-#ifndef INCLUDE_CARMA_BITS_DEBUG_H_
-#define INCLUDE_CARMA_BITS_DEBUG_H_
+#ifndef INCLUDE_CARMA_BITS_DEBUG_HPP_
+#define INCLUDE_CARMA_BITS_DEBUG_HPP_
 
 #include <Python.h>
 #include <pymem.h>
@@ -14,7 +14,7 @@
 #include <pybind11/numpy.h>  // NOLINT
 #include <pybind11/pybind11.h>  // NOLINT
 
-#include <carma_bits/config.h> // NOLINT
+#include <carma_bits/config.hpp> // NOLINT
 #include <armadillo>  // NOLINT
 
 #include <string>
@@ -113,4 +113,4 @@ inline void print_prealloc(T* data, PyObject* obj) {
 #endif  // CARMA_EXTRA_DEBUG
 
 }  // namespace carma
-#endif  // INCLUDE_CARMA_BITS_DEBUG_H_
+#endif  // INCLUDE_CARMA_BITS_DEBUG_HPP_

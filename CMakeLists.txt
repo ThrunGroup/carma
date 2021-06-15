@@ -31,8 +31,8 @@ OPTION(CARMA_BUILD_EXAMPLES "Build examples for carma" OFF)
 INCLUDE(${PROJECT_SOURCE_DIR}/carma_config.cmake)
 INCLUDE(ParseOptions)
 CONFIGURE_FILE(
-    ${PROJECT_SOURCE_DIR}/include/carma_bits/config.h.in
-    ${PROJECT_SOURCE_DIR}/include/carma_bits/config.h
+    ${PROJECT_SOURCE_DIR}/include/carma_bits/config.hpp.in
+    ${PROJECT_SOURCE_DIR}/include/carma_bits/config.hpp
     @ONLY
 )
 # ##############################################################################
@@ -84,7 +84,7 @@ SET(CARMA_HEADERS include/carma)
 INSTALL(
     DIRECTORY "${PROJECT_SOURCE_DIR}/include" DESTINATION carma
     FILES_MATCHING
-        PATTERN "*.h"
+        PATTERN "*.hpp"
         PATTERN "carma"
 )
 

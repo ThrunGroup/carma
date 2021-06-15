@@ -1,4 +1,4 @@
-/*  carma/numpyapi.h: Wrapper around Numpy's API
+/*  carma_bits/numpyapi.hpp: Wrapper around Numpy's API
  *
  *  Adapated from:
  *
@@ -12,8 +12,8 @@
  *  Apache-2.0 license that can be found in the LICENSE file.
  */
 
-#ifndef INCLUDE_CARMA_BITS_NUMPYAPI_H_
-#define INCLUDE_CARMA_BITS_NUMPYAPI_H_
+#ifndef INCLUDE_CARMA_BITS_NUMPYAPI_HPP_
+#define INCLUDE_CARMA_BITS_NUMPYAPI_HPP_
 
 #define NPY_NO_DEPRECATED_API NPY_1_14_API_VERSION
 /* C headers */
@@ -21,9 +21,10 @@
 #include <pymem.h>
 #include <numpy/arrayobject.h>
 #include <numpy/ndarraytypes.h>
-#include <carma_bits/config.h> // NOLINT
 
 #include <pybind11/pybind11.h>  // NOLINT
+
+#include <carma_bits/config.hpp> // NOLINT
 
 namespace py = pybind11;
 

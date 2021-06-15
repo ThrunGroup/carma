@@ -1,23 +1,16 @@
-/*  carma/nparray.h: Condition checks numpy arrays
+/*  carma_bits/nparray.hpp: Condition checks numpy arrays
  *  Copyright (c) 2020 Ralph Urlus <rurlus.dev@gmail.com>
  *  All rights reserved. Use of this source code is governed by a
  *  Apache-2.0 license that can be found in the LICENSE file.
- *
- *  Adapated from:
- *      pybind11/numpy.h: Basic NumPy support, vectorize() wrapper
- *
- *      Copyright (c) 2016 Wenzel Jakob <wenzel.jakob@epfl.ch>
- *      All rights reserved. Use of this source code is governed by a
- *      BSD-style license that can be found in the LICENSE file.
  */
-#ifndef INCLUDE_CARMA_BITS_NPARRAY_H_
-#define INCLUDE_CARMA_BITS_NPARRAY_H_
+#ifndef INCLUDE_CARMA_BITS_NPARRAY_HPP_
+#define INCLUDE_CARMA_BITS_NPARRAY_HPP_
 
 #include <pybind11/numpy.h>  // NOLINT
 #include <pybind11/pybind11.h>  // NOLINT
 
-#include <carma_bits/cnumpy.h> // NOLINT
-#include <carma_bits/config.h> // NOLINT
+#include <carma_bits/cnumpy.hpp> // NOLINT
+#include <carma_bits/config.hpp> // NOLINT
 
 #include <memory>
 #include <type_traits>
@@ -84,4 +77,4 @@ inline void set_not_writeable(py::array_t<T>& arr) {
 
 }  // namespace carma
 
-#endif  // INCLUDE_CARMA_BITS_NPARRAY_H_
+#endif  // INCLUDE_CARMA_BITS_NPARRAY_HPP_

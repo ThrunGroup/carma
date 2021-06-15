@@ -1,4 +1,4 @@
-/*  carma/converters.h: Coverter of Numpy arrays and Armadillo matrices
+/*  carma_bits/converters.hpp: Coverter of Numpy arrays and Armadillo matrices
  *  Copyright (c) 2020 Ralph Urlus <rurlus.dev@gmail.com>
  *  All rights reserved. Use of this source code is governed by a
  *  Apache-2.0 license that can be found in the LICENSE file.
@@ -14,21 +14,21 @@
  *      arma_wrapper/arma_wrapper.h:
  *      Copyright (C) 2019 Paul Sangrey governed by Apache 2.0 License
  */
-#ifndef INCLUDE_CARMA_BITS_CONVERTERS_H_
-#define INCLUDE_CARMA_BITS_CONVERTERS_H_
+#ifndef INCLUDE_CARMA_BITS_CONVERTERS_HPP_
+#define INCLUDE_CARMA_BITS_CONVERTERS_HPP_
 #include <pybind11/buffer_info.h>  // NOLINT
 #include <pybind11/detail/common.h>  // NOLINT
 #include <pybind11/numpy.h>  // NOLINT
 #include <pybind11/pybind11.h>  // NOLINT
 
 /* carma headers */
-#include <carma_bits/debug.h>  // NOLINT
-#include <carma_bits/typecheck.h>  // NOLINT
-#include <carma_bits/cnumpy.h>  // NOLINT
-#include <carma_bits/nparray.h>  // NOLINT
-#include <carma_bits/numpytoarma.h>  // NOLINT
-#include <carma_bits/armatonumpy.h>  // NOLINT
-#include <carma_bits/config.h> // NOLINT
+#include <carma_bits/debug.hpp>  // NOLINT
+#include <carma_bits/typecheck.hpp>  // NOLINT
+#include <carma_bits/cnumpy.hpp>  // NOLINT
+#include <carma_bits/nparray.hpp>  // NOLINT
+#include <carma_bits/numpytoarma.hpp>  // NOLINT
+#include <carma_bits/armatonumpy.hpp>  // NOLINT
+#include <carma_bits/config.hpp> // NOLINT
 
 #include <armadillo>  // NOLINT
 
@@ -776,4 +776,4 @@ struct type_caster<armaT, enable_if_t<carma::is_convertible<armaT>::value>> {
 };
 } /* namespace detail */
 } /* namespace pybind11 */
-#endif  // INCLUDE_CARMA_BITS_CONVERTERS_H_
+#endif  // INCLUDE_CARMA_BITS_CONVERTERS_HPP_

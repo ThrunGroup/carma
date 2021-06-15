@@ -1,11 +1,11 @@
-/*  carma/cnumpy.h: Code to steal the memory from Numpy arrays
+/*  carma_bits/cnumpy.h: Code to steal the memory from Numpy arrays
  *  Copyright (c) 2020 Ralph Urlus <rurlus.dev@gmail.com>
  *  All rights reserved. Use of this source code is governed by a
  *  Apache-2.0 license that can be found in the LICENSE file.
  */
 
-#ifndef INCLUDE_CARMA_BITS_CNUMPY_H_
-#define INCLUDE_CARMA_BITS_CNUMPY_H_
+#ifndef INCLUDE_CARMA_BITS_CNUMPY_HPP_
+#define INCLUDE_CARMA_BITS_CNUMPY_HPP_
 #include <object.h>
 #define NPY_NO_DEPRECATED_API NPY_1_14_API_VERSION
 
@@ -17,10 +17,10 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-#include <carma_bits/config.h>
-#include <carma_bits/numpyapi.h>
-#include <carma_bits/debug.h>
-#include <carma_bits/typecheck.h>
+#include <carma_bits/config.hpp>
+#include <carma_bits/numpyapi.hpp>
+#include <carma_bits/debug.hpp>
+#include <carma_bits/typecheck.hpp>
 
 #include <armadillo>
 
@@ -294,4 +294,4 @@ inline static T* swap_copy_array(PyObject* obj) {
 }  // namespace details
 }  // namespace carma
 
-#endif  // INCLUDE_CARMA_BITS_CNUMPY_H_
+#endif  // INCLUDE_CARMA_BITS_CNUMPY_HPP_

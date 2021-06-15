@@ -50,7 +50,7 @@ struct carma_version {
 }; // carma_version
 } // namespace carma
 
-#include "carma_bits/nparray.h"
-#include "carma_bits/arraystore.h"
-#include "carma_bits/converters.h"
+#include "carma_bits/nparray.hpp"
+#include "carma_bits/arraystore.hpp"
+#include "carma_bits/converters.hpp"
 #endif  // INCLUDE_CARMA_H_

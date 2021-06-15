@@ -1,10 +1,10 @@
-/*  carma/typechecks.h: Template type checks
+/*  carma_bits/typechecks.hpp: Template type checks
  *  Copyright (c) 2020 Ralph Urlus <rurlus.dev@gmail.com>
  *  All rights reserved. Use of this source code is governed by a
  *  Apache-2.0 license that can be found in the LICENSE file.
  */
-#ifndef INCLUDE_CARMA_BITS_TYPECHECK_H_
-#define INCLUDE_CARMA_BITS_TYPECHECK_H_
+#ifndef INCLUDE_CARMA_BITS_TYPECHECK_HPP_
+#define INCLUDE_CARMA_BITS_TYPECHECK_HPP_
 #include <armadillo>
 
 #include <memory>
@@ -57,4 +57,4 @@ template <typename T>
 struct is_cube<arma::Cube<T>> : std::true_type {};
 
 }  // namespace carma
-#endif  // INCLUDE_CARMA_BITS_TYPECHECK_H_
+#endif  // INCLUDE_CARMA_BITS_TYPECHECK_HPP_

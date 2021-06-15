@@ -1,3 +1,8 @@
+/*  carma_bits/cnalloc.hpp: Wrappers around Numpy's (de)allocator
+ *  Copyright (c) 2021 Ralph Urlus <rurlus.dev@gmail.com>
+ *  All rights reserved. Use of this source code is governed by a
+ *  Apache-2.0 license that can be found in the LICENSE file.
+ */
 #ifndef INCLUDE_CARMA_BITS_CNALLOC_HPP_
 #define INCLUDE_CARMA_BITS_CNALLOC_HPP_
 

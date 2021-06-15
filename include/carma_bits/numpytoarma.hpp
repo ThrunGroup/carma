@@ -1,21 +1,10 @@
-/*  carma/numpytoarma.h: Coverter of Numpy arrays to Armadillo matrices
+/*  carma_bits/numpytoarma.hpp: Coverter of Numpy arrays to Armadillo matrices
  *  Copyright (c) 2020 Ralph Urlus <rurlus.dev@gmail.com>
  *  All rights reserved. Use of this source code is governed by a
  *  Apache-2.0 license that can be found in the LICENSE file.
- *
- *  Adapated from:
- *
- *      pybind11/eigen.h: Transparent conversion for dense and sparse Eigen matrices
- *      Copyright (c) 2016 Wolf Vollprecht <w.vollprecht@gmail.com>
- *                         Wenzel Jakob <wenzel.jakob@epfl.ch>
- *      All rights reserved. Use of this source code is governed by a
- *      BSD-style license that can be found in the pybind11/LICENSE file.
- *
- *      arma_wrapper/arma_wrapper.h:
- *      Copyright (C) 2019 Paul Sangrey governed by Apache 2.0 License
  */
-#ifndef INCLUDE_CARMA_BITS_NUMPYTOARMA_H_
-#define INCLUDE_CARMA_BITS_NUMPYTOARMA_H_
+#ifndef INCLUDE_CARMA_BITS_NUMPYTOARMA_HPP_
+#define INCLUDE_CARMA_BITS_NUMPYTOARMA_HPP_
 
 #include <pybind11/buffer_info.h>  // NOLINT
 #include <pybind11/detail/common.h>  // NOLINT
@@ -23,11 +12,11 @@
 #include <pybind11/pybind11.h>  // NOLINT
 
 /* carma headers */
-#include <carma_bits/debug.h>  // NOLINT
-#include <carma_bits/typecheck.h>  // NOLINT
-#include <carma_bits/cnumpy.h>  // NOLINT
-#include <carma_bits/nparray.h>  // NOLINT
-#include <carma_bits/config.h> // NOLINT
+#include <carma_bits/debug.hpp>  // NOLINT
+#include <carma_bits/typecheck.hpp>  // NOLINT
+#include <carma_bits/cnumpy.hpp>  // NOLINT
+#include <carma_bits/nparray.hpp>  // NOLINT
+#include <carma_bits/config.hpp> // NOLINT
 
 #include <armadillo>  // NOLINT
 #include <iostream>
@@ -323,4 +312,4 @@ inline arma::Cube<T> arr_to_cube(
 }  // namespace details
 }  // namespace carma
 
-#endif  // INCLUDE_CARMA_BITS_NUMPYTOARMA_H_
+#endif  // INCLUDE_CARMA_BITS_NUMPYTOARMA_HPP_
