@@ -48,20 +48,26 @@ struct npy_api {
     void (*PyArray_Free_)(PyArrayObject *, void* ptr);
     int (*PyArray_Size_)(PyObject* src);
     PyObject *(*PyArray_NewCopy_)(PyArrayObject *, int);
+    PyArray_Descr* (*PyArray_DescrFromType_)(int typenum);
     int (*PyArray_CopyInto_)(PyArrayObject* dest, PyArrayObject* src);
     PyObject* (*PyArray_NewLikeArray_)(PyArrayObject* prototype, NPY_ORDER order, PyArray_Descr* descr, int subok);
     PyObject* (*PyArray_NewFromDescr_)(PyTypeObject* subtype, PyArray_Descr* descr, int nd, npy_intp const* dims, npy_intp const* strides, void* data, int flags, PyObject* obj);
     void *(*PyDataMem_NEW_)(size_t nbytes);
     void (*PyDataMem_FREE_)(void* ptr);
+    PyTypeObject *PyArray_Type_;
+    PyTypeObject *PyArrayDescr_Type_;
 
  private:
     enum functions {
+        API_PyArray_Type = 2,
+        API_PyArrayDescr_Type = 3,
         API_PyArray_Free = 165,
         API_PyArray_Size = 59,
         API_PyArray_NewCopy = 85,
         API_PyArray_CopyInto = 82,
         API_PyArray_NewLikeArray = 277,
         API_PyArray_NewFromDescr = 94,
+        API_PyArray_DescrFromType = 45,
         API_PyDataMem_NEW = 288,
         API_PyDataMem_FREE = 289,
     };
@@ -76,12 +82,15 @@ struct npy_api {
 #endif
         npy_api api;
 #define DECL_NPY_API(Func) api.Func##_ = (decltype(api.Func##_)) api_ptr[API_##Func];
+        DECL_NPY_API(PyArray_Type);
+        DECL_NPY_API(PyArrayDescr_Type);
         DECL_NPY_API(PyArray_Free);
         DECL_NPY_API(PyArray_Size);
         DECL_NPY_API(PyArray_NewCopy);
         DECL_NPY_API(PyArray_CopyInto);
         DECL_NPY_API(PyArray_NewLikeArray);
         DECL_NPY_API(PyArray_NewFromDescr);
+        DECL_NPY_API(PyArray_DescrFromType);
         DECL_NPY_API(PyDataMem_NEW);
         DECL_NPY_API(PyDataMem_FREE);
 #undef DECL_NPY_API
@@ -91,4 +100,4 @@ struct npy_api {
 
 }  // namespace carman
 
-#endif  // INCLUDE_CARMA_BITS_NUMPYAPI_H_
+#endif  // INCLUDE_CARMA_BITS_NUMPYAPI_HPP_
