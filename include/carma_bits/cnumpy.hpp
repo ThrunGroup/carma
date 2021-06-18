@@ -28,6 +28,8 @@
 #include <iostream>
 #include <algorithm>
 #include <utility>
+#include <type_traits>
+#include <cstdint>
 
 namespace py = pybind11;
 
@@ -283,6 +285,45 @@ inline void set_not_writeable(PyObject* obj) {
     PyArray_CLEARFLAGS(src,  NPY_ARRAY_WRITEABLE);
 }
 
+// grab corresponding NPY_TYPE at compile time
+template<typename T>
+constexpr int get_type() {
+    bool pass_assert = true;
+    if (std::is_same<bool, T>::value) {
+        return NPY_BOOL;
+    } else if (std::is_same<std::int8_t, T>::value) {
+        return NPY_INT8;
+    } else if (std::is_same<std::int16_t, T>::value) {
+        return NPY_INT16;
+    } else if (std::is_same<std::int32_t, T>::value) {
+        return NPY_INT32;
+    } else if (std::is_same<std::int64_t, T>::value) {
+        return NPY_INT64;
+    } else if (std::is_same<long, T>::value) {
+        return NPY_LONG;
+    } else if (std::is_same<size_t, T>::value) {
+        return NPY_INTP;
+    } else if (std::is_same<std::uint8_t, T>::value) {
+        return NPY_UINT8;
+    } else if (std::is_same<std::uint16_t, T>::value) {
+        return NPY_UINT16;
+    } else if (std::is_same<std::uint32_t, T>::value) {
+        return NPY_UINT32;
+    } else if (std::is_same<std::uint64_t, T>::value) {
+        return NPY_UINT64;
+    } else if (std::is_same<float, T>::value) {
+        return NPY_FLOAT;
+    } else if (std::is_same<double, T>::value) {
+        return NPY_DOUBLE;
+    } else if (std::is_same<std::complex<float>, T>::value) {
+        return NPY_COMPLEX64;
+    } else if (std::is_same<std::complex<double>, T>::value) {
+        return NPY_COMPLEX128;
+    } else {
+        return -1;
+    }
+}
+
 /* ---- steal_memory ----
  * The default behaviour is to turn off the owndata flag, numpy will no longer
  * free the allocated resources.
@@ -371,7 +412,7 @@ inline static T* steal_copy_array(PyObject* obj) {
 
     // build an PyArray to do F-order copy
     auto dest = reinterpret_cast<PyArrayObject*>(api.PyArray_NewFromDescr_(
-        Py_TYPE(src),
+        api.PyArray_Type_,
         dtype,
         ndim,
         dims,
@@ -422,7 +463,7 @@ inline static T* swap_copy_array(PyObject* obj) {
 
     // build an PyArray to do F-order copy, memory will be freed by arma::memory::release
     auto tmp = reinterpret_cast<PyArrayObject*>(api.PyArray_NewFromDescr_(
-        Py_TYPE(src),
+        api.PyArray_Type_,
         dtype,
         ndim,
         dims,
@@ -458,6 +499,82 @@ inline static T* swap_copy_array(PyObject* obj) {
     Py_DECREF(tmp);
     return reinterpret_cast<T*>(PyArray_DATA(src));
 }  // swap_copy_array
+
+template <typename T>
+inline static PyObject* copy_array(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    PyArray_Descr* dtype = PyArray_DESCR(src);
+    // NewFromDescr steals a reference
+    Py_INCREF(dtype);
+    // dimension checks have been done prior so array should
+    // not have more than 3 dimensions
+    int ndim = PyArray_NDIM(src);
+    npy_intp const* dims = PyArray_DIMS(src);
+
+    auto& api = carman::npy_api::get();
+    // data will be freed by arma::memory::release
+    T* data = arma::memory::acquire<T>(api.PyArray_Size_(obj));
+
+    // build an PyArray to do F-order copy
+    auto dest = reinterpret_cast<PyArrayObject*>(api.PyArray_NewFromDescr_(
+        api.PyArray_Type_,
+        dtype,
+        ndim,
+        dims,
+        NULL,
+        data,
+#ifdef CARMA_C_CONTIGUOUS_MODE
+        NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#else
+        NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#endif
+        NULL
+    ));
+
+    // copy the array to a well behaved F-order
+    api.PyArray_CopyInto_(dest, src);
+    PyArray_ENABLEFLAGS(dest, NPY_ARRAY_OWNDATA);
+    return reinterpret_cast<PyObject*>(dest);
+}  // copy_array
+
+template <typename T>
+inline static PyObject* create_array(T* data, size_t ndim, size_t nelem, size_t nrows, size_t ncols, size_t nslices=0) {
+    auto& api = carman::npy_api::get();
+
+    static constexpr int npy_type = get_type<T>();
+    PyArray_Descr* dtype = api.PyArray_DescrFromType_(npy_type);
+    Py_INCREF(dtype);
+
+    npy_intp* dims = new npy_intp[ndim];
+    dims[0] = nrows;
+    dims[1] = ncols;
+    if (ndim == 3) {
+        dims[2] = nslices;
+    }
+
+    // build an PyArray to do F-order copy
+    // strides are computed based on dims and flag
+    auto dest = reinterpret_cast<PyArrayObject*>(api.PyArray_NewFromDescr_(
+        api.PyArray_Type_,
+        dtype,
+        ndim,
+        dims,
+        NULL,
+        data,
+#ifdef CARMA_C_CONTIGUOUS_MODE
+        NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#else
+        NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_BEHAVED,
+#endif
+        NULL
+    ));
+
+    // dims is copied over
+    delete[] dims;
+    // copy the array to a well behaved F-order
+    PyArray_ENABLEFLAGS(dest, NPY_ARRAY_OWNDATA);
+    return reinterpret_cast<PyObject*>(dest);
+}  // create_array
 
 }  // namespace details
 }  // namespace carma

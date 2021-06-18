@@ -41,6 +41,7 @@ namespace py = pybind11;
 
 namespace carma {
 
+using aconf =  arma::arma_config;
 /*****************************************************************************************
  *                                   Numpy to Armadillo                                   *
  *****************************************************************************************/
@@ -517,34 +518,195 @@ inline py::array_t<T> col_to_arr(arma::Col<T>* src, int copy = 0) {
 
 /* ######################################## Mat ######################################## */
 
+/* Convert arma::Mat<T> to Numpy array
+ *
+ * We copy the memory out
+ */
 template <typename T>
 inline py::array_t<T> mat_to_arr(const arma::Mat<T>& src) {
-    return details::construct_array<T>(new arma::Mat<T>(src));
-} /* mat_to_arr */
+    T* data = arma::memory::acquire<T>(src.n_elem);
+    arma::arrayops::copy(data, src.memptr(), src.n_elem);
 
-template <typename T>
-inline py::array_t<T> mat_to_arr(arma::Mat<T>&& src) {
-    return details::construct_array<T>(new arma::Mat<T>(std::move(src)));
-} /* mat_to_arr */
-
-template <typename T>
-inline py::array_t<T> mat_to_arr(arma::Mat<T>& src, int copy = 0) {
-    if (!copy) {
-        return details::construct_array<T>(new arma::Mat<T>(std::move(src)));
-    }
-    return details::construct_array<T>(
-        new arma::Mat<T>(src.memptr(), src.n_rows, src.n_cols, true)
+    PyObject* obj = details::create_array<T>(
+        data,
+        2,
+        src.n_elem,
+        src.n_rows,
+        src.n_cols
     );
+    return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
 } /* mat_to_arr */
 
+/* Convert arma::Mat<T> to Numpy array
+ *
+ * We take ownership of the memory
+ */
 template <typename T>
-inline py::array_t<T> mat_to_arr(arma::Mat<T>* src, int copy = 0) {
-    if (!copy) {
-        return details::construct_array<T>(new arma::Mat<T>(std::move(*src)));
+inline py::array_t<T> mat_to_arr(arma::Mat<T>&& stolen_src) {
+    auto src = arma::Mat<T>(std::move(stolen_src));
+    PyObject* obj;
+    if ((src.n_elem > aconf::mat_prealloc) && (arma::access::rw(src.mem_state) == 0)) {
+        obj = details::create_array<T>(
+            src.memptr(),
+            2,
+            src.n_elem,
+            src.n_rows,
+            src.n_cols
+        );
+        arma::access::rw(src.n_alloc) = 0;
+        arma::access::rw(src.mem_state) = 2;
+        return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
     }
-    return details::construct_array(
-        new arma::Mat<T>(src->memptr(), src->n_rows, src->n_cols, true)
+    T* data = arma::memory::acquire<T>(src.n_elem);
+    arma::arrayops::copy(data, src.memptr(), src.n_elem);
+
+    obj = details::create_array<T>(
+        data,
+        2,
+        src.n_elem,
+        src.n_rows,
+        src.n_cols
     );
+    return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+} /* mat_to_arr */
+
+/* Convert arma::Mat<T> to Numpy array
+ *
+ * We copy if the matrix does not own the memory or if it has been preallocated
+ * i.e. mem_state != 0
+ */
+template <typename T>
+inline py::array_t<T> mat_to_arr(arma::Mat<T>& src) {
+    PyObject* obj;
+    if ((src.n_elem > aconf::mat_prealloc) && (arma::access::rw(src.mem_state) == 0)) {
+        obj = details::create_array<T>(
+            src.memptr(),
+            2,
+            src.n_elem,
+            src.n_rows,
+            src.n_cols
+        );
+        arma::access::rw(src.n_alloc) = 0;
+        arma::access::rw(src.mem_state) = 2;
+        return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+    }
+
+    T* data = arma::memory::acquire<T>(src.n_elem);
+    arma::arrayops::copy(data, src.memptr(), src.n_elem);
+
+    obj = details::create_array<T>(
+        data,
+        2,
+        src.n_elem,
+        src.n_rows,
+        src.n_cols
+    );
+    return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+} /* mat_to_arr */
+
+/* Convert arma::Mat<T> to Numpy array
+ *
+ * We copy if copy is true or if the matrix does not own the memory
+ * or if it has been preallocated i.e. mem_state != 0
+ */
+template <typename T>
+inline py::array_t<T> mat_to_arr(arma::Mat<T>& src, bool copy) {
+    PyObject* obj;
+    if ((src.n_elem > aconf::mat_prealloc) && (arma::access::rw(src.mem_state) == 0) && !copy) {
+
+        obj = details::create_array<T>(
+            src.memptr(),
+            2,
+            src.n_elem,
+            src.n_rows,
+            src.n_cols
+        );
+        arma::access::rw(src.n_alloc) = 0;
+        arma::access::rw(src.mem_state) = 2;
+        return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+    }
+
+    T* data = arma::memory::acquire<T>(src.n_elem);
+    arma::arrayops::copy(data, src.memptr(), src.n_elem);
+
+    obj = details::create_array<T>(
+        data,
+        2,
+        src.n_elem,
+        src.n_rows,
+        src.n_cols
+    );
+    return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+} /* mat_to_arr */
+
+/* Convert arma::Mat<T> to Numpy array
+ *
+ * We copy if the matrix does not own the memory or if it has been preallocated
+ * i.e. mem_state != 0
+ */
+template <typename T>
+inline py::array_t<T> mat_to_arr(arma::Mat<T>* src) {
+    PyObject* obj;
+    if ((src->n_elem > aconf::mat_prealloc) && (arma::access::rw(src->mem_state) == 0)) {
+        auto stolen_src = arma::Mat<T>(std::move(*src));
+        obj = details::create_array<T>(
+            stolen_src.memptr(),
+            2,
+            stolen_src.n_elem,
+            stolen_src.n_rows,
+            stolen_src.n_cols
+        );
+        arma::access::rw(stolen_src.n_alloc) = 0;
+        arma::access::rw(stolen_src.mem_state) = 2;
+        return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+    }
+
+    T* data = arma::memory::acquire<T>(src->n_elem);
+    arma::arrayops::copy(data, src->memptr(), src->n_elem);
+
+    obj = details::create_array<T>(
+        data,
+        2,
+        src->n_elem,
+        src->n_rows,
+        src->n_cols
+    );
+    return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+} /* mat_to_arr */
+
+/* Convert arma::Mat<T> to Numpy array
+ *
+ * We copy if copy is true or if the matrix does not own the memory
+ * or if it has been preallocated i.e. mem_state != 0
+ */
+template <typename T>
+inline py::array_t<T> mat_to_arr(arma::Mat<T>* src, bool copy) {
+    PyObject* obj;
+    if ((src->n_elem > aconf::mat_prealloc) && (arma::access::rw(src->mem_state) == 0) && !copy) {
+        auto stolen_src = arma::Mat<T>(std::move(*src));
+        obj = details::create_array<T>(
+            stolen_src.memptr(),
+            2,
+            stolen_src.n_elem,
+            stolen_src.n_rows,
+            stolen_src.n_cols
+        );
+        arma::access::rw(stolen_src.n_alloc) = 0;
+        arma::access::rw(stolen_src.mem_state) = 2;
+        return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
+    }
+
+    T* data = arma::memory::acquire<T>(src->n_elem);
+    arma::arrayops::copy(data, src->memptr(), src->n_elem);
+
+    obj = details::create_array<T>(
+        data,
+        2,
+        src->n_elem,
+        src->n_rows,
+        src->n_cols
+    );
+    return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
 } /* mat_to_arr */
 
 /* ######################################## Cube ######################################## */
