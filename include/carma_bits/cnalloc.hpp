@@ -22,11 +22,15 @@ inline void* npy_malloc(std::size_t bytes) {
         _import_array();
     }
 #ifdef CARMA_DEV_DEBUG
+    void* ptr = PyDataMem_NEW(bytes);
     std::cout << "\n-----------\nCARMA DEBUG\n-----------\n";
     std::cout << "Using numpy allocator" << "\n";
+    std::cerr << "Allocated memory @" << ptr << std::endl;
     std::cout << "-----------\n";
-#endif  // ARMA_EXTRA_DEBUG
+    return ptr;
+#else
     return PyDataMem_NEW(bytes);
+#endif  // ARMA_EXTRA_DEBUG
 } // npy_malloc
 
 inline void npy_free(void* ptr) {
@@ -36,6 +40,7 @@ inline void npy_free(void* ptr) {
 #ifdef CARMA_DEV_DEBUG
     std::cout << "\n-----------\nCARMA DEBUG\n-----------\n";
     std::cerr << "Using numpy deallocator\n";
+    std::cerr << "Freeing memory @" << ptr << std::endl;
     std::cout << "-----------\n";
 #endif  // ARMA_EXTRA_DEBUG
     PyDataMem_FREE(ptr);
