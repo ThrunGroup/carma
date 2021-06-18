@@ -50,6 +50,7 @@ PYBIND11_MODULE(test_carma, m) {
     bind_test_is_writeable(m);
     bind_test_is_f_contiguous(m);
     bind_test_is_c_contiguous(m);
+    bind_test_set_owndata(m);
     bind_test_set_not_owndata(m);
     bind_test_set_not_writeable(m);
     bind_test_is_well_behaved(m);

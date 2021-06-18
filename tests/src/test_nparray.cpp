@@ -34,6 +34,11 @@ void bind_test_set_not_owndata(py::module& m) {
         "set_not_owndata", [](py::array_t<double>& arr) { carma::set_not_owndata(arr); }, "Test is set_not_owndata");
 }
 
+void bind_test_set_owndata(py::module& m) {
+    m.def(
+        "set_owndata", [](py::array_t<double>& arr) { carma::set_owndata(arr); }, "Test is set_not_owndata");
+}
+
 void bind_test_set_not_writeable(py::module& m) {
     m.def(
         "set_not_writeable",

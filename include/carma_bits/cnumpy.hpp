@@ -49,7 +49,7 @@ extern "C" {
     #else
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
         );
     #endif
     }
@@ -103,7 +103,7 @@ extern "C" {
     #else
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED|  NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
         );
     #endif
     }
@@ -128,12 +128,12 @@ extern "C" {
     #elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED|  NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_OWNDATA
         );
     #else
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED|  NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
         );
     #endif
     }
@@ -151,12 +151,12 @@ extern "C" {
     #if defined CARMA_DONT_REQUIRE_OWNDATA
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS
         );
     #else
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_C_CONTIGUOUS | NPY_ARRAY_OWNDATA
         );
     #endif
     }
@@ -176,17 +176,17 @@ extern "C" {
     #elif defined CARMA_DONT_REQUIRE_OWNDATA
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS
         );
     #elif defined CARMA_DONT_REQUIRE_F_CONTIGUOUS
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_OWNDATA
         );
     #else
         return PyArray_CHKFLAGS(
             arr,
-            NPY_ARRAY_ALIGNED| NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
+            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_F_CONTIGUOUS | NPY_ARRAY_OWNDATA
         );
     #endif
     }
@@ -201,6 +201,87 @@ struct not_writeable_error : std::exception {
     explicit not_writeable_error(const char* message) : message(message) {}
     const char* what() const throw() { return message; }
 };
+
+inline bool is_f_contiguous(PyArrayObject* src) {
+    return PyArray_CHKFLAGS(src, NPY_ARRAY_F_CONTIGUOUS);
+}
+
+inline bool is_f_contiguous(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    return PyArray_CHKFLAGS(src, NPY_ARRAY_F_CONTIGUOUS);
+}
+
+inline bool is_c_contiguous(PyArrayObject* src) {
+    return PyArray_CHKFLAGS(src, NPY_ARRAY_C_CONTIGUOUS);
+}
+
+inline bool is_c_contiguous(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    return PyArray_CHKFLAGS(src, NPY_ARRAY_C_CONTIGUOUS);
+}
+
+inline bool is_owndata(PyArrayObject* src) {
+    return PyArray_CHKFLAGS(src,  NPY_ARRAY_OWNDATA);
+}
+
+inline bool is_owndata(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    return PyArray_CHKFLAGS(src,  NPY_ARRAY_OWNDATA);
+}
+
+inline bool is_writeable(PyArrayObject* src) {
+    return PyArray_CHKFLAGS(src,  NPY_ARRAY_WRITEABLE);
+}
+
+inline bool is_writeable(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    return PyArray_CHKFLAGS(src,  NPY_ARRAY_WRITEABLE);
+}
+
+inline bool is_aligned(PyArrayObject* src) {
+    return PyArray_CHKFLAGS(src,  NPY_ARRAY_ALIGNED);
+}
+
+inline bool is_aligned(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    return PyArray_CHKFLAGS(src,  NPY_ARRAY_ALIGNED);
+}
+
+inline void set_owndata(PyArrayObject* src) {
+    PyArray_ENABLEFLAGS(src,  NPY_ARRAY_OWNDATA);
+}
+
+inline void set_owndata(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    PyArray_ENABLEFLAGS(src,  NPY_ARRAY_OWNDATA);
+}
+
+inline void set_not_owndata(PyArrayObject* src) {
+    PyArray_CLEARFLAGS(src,  NPY_ARRAY_OWNDATA);
+}
+
+inline void set_not_owndata(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    PyArray_CLEARFLAGS(src,  NPY_ARRAY_OWNDATA);
+}
+
+inline void set_writeable(PyArrayObject* src) {
+    PyArray_ENABLEFLAGS(src,  NPY_ARRAY_WRITEABLE);
+}
+
+inline void set_writeable(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    PyArray_ENABLEFLAGS(src,  NPY_ARRAY_WRITEABLE);
+}
+
+inline void set_not_writeable(PyArrayObject* src) {
+    PyArray_CLEARFLAGS(src,  NPY_ARRAY_WRITEABLE);
+}
+
+inline void set_not_writeable(PyObject* obj) {
+    PyArrayObject* src = reinterpret_cast<PyArrayObject*>(obj);
+    PyArray_CLEARFLAGS(src,  NPY_ARRAY_WRITEABLE);
+}
 
 /* ---- steal_memory ----
  * The default behaviour is to turn off the owndata flag, numpy will no longer

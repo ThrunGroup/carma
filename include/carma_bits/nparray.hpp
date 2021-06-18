@@ -20,59 +20,48 @@ namespace py = pybind11;
 
 namespace carma {
 
-template <typename T>
-inline bool is_f_contiguous(const py::array_t<T>& arr) {
-    return py::detail::check_flags(arr.ptr(), py::detail::npy_api::NPY_ARRAY_F_CONTIGUOUS_);
+inline bool is_f_contiguous(const py::array& arr) {
+    return details::is_f_contiguous(arr.ptr());
 }
 
-template <typename T>
-inline bool is_c_contiguous(const py::array_t<T>& arr) {
-    return py::detail::check_flags(arr.ptr(), py::detail::npy_api::NPY_ARRAY_C_CONTIGUOUS_);
+inline bool is_c_contiguous(const py::array& arr) {
+    return details::is_c_contiguous(arr.ptr());
 }
 
-template <typename T>
-inline bool is_contiguous(const py::array_t<T>& arr) {
+inline bool is_contiguous(const py::array& arr) {
     return is_f_contiguous(arr) || is_c_contiguous(arr);
 }
 
-template <typename T>
-inline bool is_writeable(const py::array_t<T>& arr) {
-    return py::detail::check_flags(arr.ptr(), py::detail::npy_api::NPY_ARRAY_WRITEABLE_);
+inline bool is_writeable(const py::array& arr) {
+    return details::is_writeable(arr.ptr());
 }
 
-template <typename T>
-inline bool is_owndata(const py::array_t<T>& arr) {
-    return py::detail::check_flags(arr.ptr(), py::detail::npy_api::NPY_ARRAY_OWNDATA_);
+inline bool is_owndata(const py::array& arr) {
+    return details::is_owndata(arr.ptr());
 }
 
-template <typename T>
-inline bool is_aligned(const py::array_t<T>& arr) {
-    return py::detail::check_flags(arr.ptr(), py::detail::npy_api::NPY_ARRAY_ALIGNED_);
+inline bool is_aligned(const py::array& arr) {
+    return  details::is_aligned(arr.ptr());
 }
 
-template <typename T>
-inline bool is_well_behaved(const py::array_t<T>& arr) {
+inline bool is_well_behaved(const py::array& arr) {
     return well_behaved(arr.ptr());
 }
 
-template <typename T>
-inline void set_owndata(py::array_t<T>& arr) {
-    py::detail::array_proxy(arr.ptr())->flags &= py::detail::npy_api::NPY_ARRAY_OWNDATA_;
+inline void set_owndata(py::array& arr) {
+    return details::set_owndata(arr.ptr());
 }
 
-template <typename T>
-inline void set_not_owndata(py::array_t<T>& arr) {
-    py::detail::array_proxy(arr.ptr())->flags &= ~py::detail::npy_api::NPY_ARRAY_OWNDATA_;
+inline void set_not_owndata(py::array& arr) {
+    return details::set_not_owndata(arr.ptr());
 }
 
-template <typename T>
-inline void set_writeable(py::array_t<T>& arr) {
-    py::detail::array_proxy(arr.ptr())->flags &= py::detail::npy_api::NPY_ARRAY_WRITEABLE_;
+inline void set_writeable(py::array& arr) {
+    return details::set_writeable(arr.ptr());
 }
 
-template <typename T>
-inline void set_not_writeable(py::array_t<T>& arr) {
-    py::detail::array_proxy(arr.ptr())->flags &= ~py::detail::npy_api::NPY_ARRAY_WRITEABLE_;
+inline void set_not_writeable(py::array& arr) {
+    return details::set_not_writeable(arr.ptr());
 }
 
 }  // namespace carma
