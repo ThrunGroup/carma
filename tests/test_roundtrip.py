@@ -118,3 +118,60 @@ def test_cube_roundtrip_small():
     sample = og_sample.copy()
     out = carma.cube_roundtrip(sample)
     assert np.allclose(og_sample, out)
+
+def test_mat_roundtrip_F():
+    """Test mat_roundtrip."""
+    og_sample = np.asarray(
+        np.random.normal(size=(50, 2)), dtype=np.float64, order='F'
+    )
+    sample = og_sample.copy(order='F')
+    out = carma.mat_roundtrip(sample)
+    assert np.allclose(og_sample, out)
+
+def test_mat_roundtrip_large_F():
+    """Test mat_roundtrip."""
+    og_sample = np.asarray(
+        np.random.normal(size=(1000, 1000)), dtype=np.float64, order='F'
+    )
+    sample = og_sample.copy(order='F')
+    out = carma.mat_roundtrip(sample)
+    assert np.allclose(og_sample, out)
+
+
+def test_mat_roundtrip_small_F():
+    """Test mat_roundtrip."""
+    og_sample = np.asarray(
+        np.random.normal(size=(3, 3)), dtype=np.float64, order='F'
+    )
+    sample = og_sample.copy(order='F')
+    out = carma.mat_roundtrip(sample)
+    assert np.allclose(og_sample, out)
+
+
+def test_cube_roundtrip_F():
+    """Test cube_roundtrip."""
+    og_sample = np.asarray(
+        np.random.normal(size=(50, 3, 2)), dtype=np.float64, order='F'
+    )
+    sample = og_sample.copy(order='F')
+    out = carma.cube_roundtrip(sample)
+    assert np.allclose(og_sample, out)
+
+def test_cube_roundtrip_large_F():
+    """Test cube_roundtrip."""
+    og_sample = np.asarray(
+        np.random.normal(size=(1000, 10, 2)), dtype=np.float64, order='F'
+    )
+    sample = og_sample.copy(order='F')
+    out = carma.cube_roundtrip(sample)
+    assert np.allclose(og_sample, out)
+
+
+def test_cube_roundtrip_small_F():
+    """Test cube_roundtrip."""
+    og_sample = np.asarray(
+        np.random.normal(size=((2, 2, 2))), dtype=np.float64, order='F'
+    )
+    sample = og_sample.copy(order='F')
+    out = carma.cube_roundtrip(sample)
+    assert np.allclose(og_sample, out)
