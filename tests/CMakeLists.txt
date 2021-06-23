@@ -46,6 +46,7 @@ IF (NOT DEFINED BUILD_PYTHON_TESTS OR BUILD_PYTHON_TESTS)
     pybind11_add_module(${MODNAME}
         MODULE
             src/bindings.cpp
+            src/debug.cpp
             src/test_nparray.cpp
             src/test_roundtrip.cpp
             src/test_arr_to_mat.cpp

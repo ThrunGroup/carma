@@ -3,6 +3,7 @@
 // include numpy header for usage of array_t
 #include <pybind11/numpy.h>
 
+#include "debug.h"
 #include "test_arr_to_mat.h"
 #include "test_arraystore.h"
 #include "test_mat_to_arr.h"
@@ -83,4 +84,8 @@ PYBIND11_MODULE(test_carma, m) {
     bind_test_row_roundtrip(m);
     bind_test_col_roundtrip(m);
     bind_test_cube_roundtrip(m);
+
+    // debug
+    bind_debug_arr_to_mat(m);
+    bind_debug_mat_to_arr(m);
 }

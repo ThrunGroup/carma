@@ -392,13 +392,6 @@ int test_to_arma_row(py::array_t<double>& arr, bool copy) {
     return 0;
 } /* arr_to_arma_row */
 
-py::array_t<double> debug_arr_to_mat(py::array_t<double>& arr, int copy) {
-    if (copy < 0) {
-        return carma::mat_to_arr(carma::arr_to_mat<double>(std::move(arr)));
-    }
-    return carma::mat_to_arr(carma::arr_to_mat<double>(arr, copy));
-}
-
 }  // namespace tests
 }  // namespace carma
 

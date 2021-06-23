@@ -23,9 +23,11 @@ int test_to_arma_mat(py::array_t<double>& arr, bool copy);
 int test_to_arma_col(py::array_t<double>& arr, bool copy);
 int test_to_arma_row(py::array_t<double>& arr, bool copy);
 int test_to_arma_cube(py::array_t<double>& arr, bool copy);
+py::array_t<double> debug_arr_to_mat(py::array_t<double>& arr, int copy);
 }  // namespace tests
 }  // namespace carma
 
+void bind_debug_arr_to_mat(py::module& m);
 void bind_test_arr_to_row(py::module& m);
 void bind_test_arr_to_col(py::module& m);
 void bind_test_arr_to_cube(py::module& m);
