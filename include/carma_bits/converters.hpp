@@ -591,6 +591,15 @@ inline py::array_t<T> mat_to_arr(arma::Mat<T>& src) {
         return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
     }
 
+#ifdef CARMA_EXTRA_DEBUG
+    debug::print_opening();
+    std::cout << "Memory @" << src.memptr() <<  " cannot be stolen and will be copied." << "\n";
+    std::cout << "The Matrix's memory is not as expected: " << "\n";
+    std::cout << "  * smaller than preallocation limit: " << (src.n_elem <= aconf::mat_prealloc) <<   "\n";
+    std::cout << "  * does not own the data: " << (arma::access::rw(src.mem_state) != 0) << "\n";
+    debug::print_closing();
+#endif
+
     T* data = arma::memory::acquire<T>(src.n_elem);
     arma::arrayops::copy(data, src.memptr(), src.n_elem);
 
@@ -613,6 +622,12 @@ template <typename T>
 inline py::array_t<T> mat_to_arr(arma::Mat<T>& src, bool copy) {
     PyObject* obj;
     if ((src.n_elem > aconf::mat_prealloc) && (arma::access::rw(src.mem_state) == 0) && !copy) {
+#ifdef CARMA_EXTRA_DEBUG
+        debug::print_opening();
+        std::cout << "Memory @" << src.memptr() <<  " will be stolen." << "\n";
+        std::cout << "  * mem_state: " << arma::access::rw(src.mem_state) << "\n";
+        debug::print_closing();
+#endif
 
         obj = details::create_array<T>(
             src.memptr(),
@@ -625,6 +640,14 @@ inline py::array_t<T> mat_to_arr(arma::Mat<T>& src, bool copy) {
         arma::access::rw(src.mem_state) = 2;
         return py::array_t<T>::ensure(py::reinterpret_steal<py::object>(obj));
     }
+#ifdef CARMA_EXTRA_DEBUG
+    debug::print_opening();
+    std::cout << "Memory @" << src.memptr() <<  " cannot be stolen and will be copied." << "\n";
+    std::cout << "The Matrix's memory is not as expected: " << "\n";
+    std::cout << "  * smaller than preallocation limit: " << (src.n_elem <= aconf::mat_prealloc) <<   "\n";
+    std::cout << "  * does not own the data: " << (arma::access::rw(src.mem_state) != 0) << "\n";
+    debug::print_closing();
+#endif
 
     T* data = arma::memory::acquire<T>(src.n_elem);
     arma::arrayops::copy(data, src.memptr(), src.n_elem);

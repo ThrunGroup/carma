@@ -2,6 +2,10 @@
 #include <pybind11/pybind11.h>
 #include <armadillo>
 #include <carma>
+#include <iostream>
+#include <utility>
+
+#include "test_roundtrip.h"
 
 namespace py = pybind11;
 
@@ -11,7 +15,10 @@ namespace tests {
 py::array_t<double> test_mat_roundtrip(py::array_t<double>& arr) {
     // call function to be tested
     arma::Mat<double> M = carma::arr_to_mat<double>(std::move(arr));
-    return carma::mat_to_arr(M);
+    std::cout << "M's memory adress: " << M.memptr() << "\n";
+    py::array_t<double> out = carma::mat_to_arr(M);
+    std::cout << "out's memory pointer: " << out.data() << "\n";
+    return arr;
 }
 
 py::array_t<double> test_row_roundtrip(py::array_t<double>& arr) {
