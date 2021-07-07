@@ -36,9 +36,9 @@
 namespace carma {
 
 struct carma_version {
-    static constexpr unsigned int major = CARMA_VERSION_MAJOR;
-    static constexpr unsigned int minor = CARMA_VERSION_MINOR;
-    static constexpr unsigned int patch = CARMA_VERSION_PATCH;
+    static constexpr unsigned int major = 0;
+    static constexpr unsigned int minor = 5;
+    static constexpr unsigned int patch = 0;
 
     static inline std::string as_string() {
         std::ostringstream buffer;
