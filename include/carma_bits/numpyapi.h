@@ -30,7 +30,7 @@ namespace py = pybind11;
 namespace carman {
 
 inline npy_intp* NPyDimMem_NEW(int nd) {
-    return static_cast<npy_intp*>(PyMem_RawMalloc(nd * sizeof(npy_intp)));
+    return static_cast<npy_intp*>(PyMem_Malloc(nd * sizeof(npy_intp)));
 }
 
 struct npy_api {
